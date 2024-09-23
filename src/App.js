@@ -1,6 +1,6 @@
-import { LogoIcon } from "./assets/icons"
-import CrudUser from "./components/CrudUser"
-import "./styles/App.css"
+import { LogoIcon } from "./assets/icons" // Importa o ícone do logo
+import CrudUser from "./components/CrudUser" // Importa o componente CrudUser
+import "./styles/App.css" // Importa o arquivo de estilos CSS
 
 function App() {
 	return (
@@ -8,16 +8,16 @@ function App() {
 			<header>
 				<div className='header__content'>
 					<div className='logo'>
-						<LogoIcon />
-						<strong>JSON SERVER API</strong>
+						<LogoIcon /> {/* Renderiza o ícone do logo */}
+						<strong>JSON SERVER API</strong> {/* Texto do logo */}
 					</div>
 				</div>
 			</header>
 			<main>
-				<CrudUser />
+				<CrudUser /> {/* Renderiza o componente CrudUser */}
 			</main>
 		</>
 	)
 }
 
-export default App
+export default App // Exporta o componente App
