@@ -1,146 +1,64 @@
-:root {
-  --background-body: #E5E5E5;
-  --background-content: #1D1D1D;
-  --text-color: #292929;
-  --primary-color: #4DFF7C;
-  --second-color: #89DDFF;
-}
+// Função helper para realizar requisições HTTP
+export const httpHelper = () => {
+	// Função customFetch para realizar a requisição com opções personalizadas
+	const customFetch = async (url, options = {}) => {
+		const defaultMethod = "GET" // Método padrão é GET
+		const defaultHeaders = {
+			"Content-Type": "application/json", // Cabeçalho padrão para JSON
+			Accept: "application/json",
+		}
+		const controller = new AbortController() // Controlador para abortar a requisição
+		options.signal = controller.signal // Adiciona o sinal de controle às opções
 
-body {
-  margin: 0;
-  font-size: 1rem;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: var(--background-body);
-  color: var(--text-color);
-}
+		// Define o método e cabeçalhos da requisição
+		options.method = options.method || defaultMethod
+		options.headers = options.headers
+			? { ...defaultHeaders, ...options.headers }
+			: defaultHeaders
 
-header {
-  position: fixed;
-  width: 100%;
-  height: 3.5rem;
-  top: 0px;
-  left: 0px;
-  background-color: var(--background-content);
-  color: var(--background-body);
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
-  z-index: 10;
-}
+		// Converte o corpo da requisição para JSON, se existir
+		options.body = JSON.stringify(options.body) || false
+		if (!options.body) delete options.body // Remove o corpo se for falso
 
-.header__content {
-  max-width: 1280px;
-  padding: 0 1rem;
-  margin: auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: relative;
-  height: 3.5rem;
-}
+		// Aborta a requisição após 3 segundos
+		setTimeout(() => {
+			controller.abort()
+		}, 3000)
 
-.logo {
-  font-size: 20px;
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  color: var(--background-body);
-}
+		try {
+			const response = await fetch(url, options) // Realiza a requisição
+			return await response.json() // Retorna a resposta em JSON
+		} catch (err) {
+			return err // Retorna o erro em caso de falha
+		}
+	}
 
-main {
-  width: 80%;
-  margin: auto;
-  margin-bottom: 3rem;
-  margin-top: 4.5rem;
-  padding: 2rem;
-  /* background-color: var(--background-content); */
-  /* box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px; */
-  border-radius: 3px;
-}
+	// Função para realizar requisição GET
+	const get = (url, options = {}) => customFetch(url, options)
 
-form {
-  width: fit-content;
-  margin: auto;
-}
+	// Função para realizar requisição POST
+	const post = (url, options) => {
+		options.method = "POST"
+		return customFetch(url, options)
+	}
 
-input, select {
-  border: none;
-  border-radius: 3px;
-  padding: 6px;
-  margin:  0 6px;
-}
+	// Função para realizar requisição PUT
+	const put = (url, options) => {
+		options.method = "PUT"
+		return customFetch(url, options)
+	}
 
-h3 {
-  text-align: center;
-  margin-top: 0;
-}
+	// Função para realizar requisição DELETE
+	const del = (url, options) => {
+		options.method = "DELETE"
+		return customFetch(url, options)
+	}
 
-button {
-  background-color: var(--second-color);
-  color: var(--text-color);
-  border: none;
-  cursor: pointer;
-  border-radius: 3px;
-  font-weight: bold;
-}
-
-.buttons {
-  width: 100%;
-  display: flex;
-  justify-content: space-around;
-  gap: 0.5rem;
-}
-
-.btn-submit {
-  background-color: var(--primary-color);
-  padding: 6px 12px;
-  cursor: pointer;
-  font-weight: bolder;
-}
-
-button:hover,
-.btn-submit:hover {
-  opacity: 0.8;
-}
-
-.all-users {
-margin-top: 3rem;
-}
-
-.titles,
-.row {
-  width: 100%;
-  display: flex;
-  text-align: center;
-}
-.titles{
-  font-weight: bold;
-  background-color: var(--text-color);
-  color: var(--background-body);
-}
-
-.titles div,
-.row input,
-.row select,
-  .row div{
-  width: 20%;
-  padding: 0.5rem;
-}
-
-.hide-form {
-  display: none;
-}
-
-@media screen and (max-width: 920px) {
-  main {
-    width: 90%;
-  }
-}
-
-@media screen and (max-width: 520px) {
-  main {
-    width: 100%;
-  }
+	// Retorna as funções de requisição
+	return {
+		get,
+		post,
+		put,
+		del,
+	}
 }
